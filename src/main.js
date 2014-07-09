@@ -15,6 +15,11 @@ var Promise = require('bluebird')
  * */
 
 exports.promisifyAll = function(mongoose, suffix){
+	var Schemas = mongoose.modelSchemas, Models = mongoose.models
+	if(Object.keys(Models).length < 1){
+		throw new Error('Promisify Error:No models found')
+	}
+
 	suffix = suffix || 'Async'
 	var  Model = mongoose.Model
 
@@ -30,6 +35,16 @@ exports.promisifyAll = function(mongoose, suffix){
 			// using this to ref the target child class, do not use Model
 			return Promise.promisify(Model[method]).apply(this, arguments)
 		}
+	})
+
+	//promisify custom static methods from schema.statics
+	$.each(Schemas, function(schema, schemaName){
+		$.each(schema.statics, function(fn, methodName){
+			var model = Models[schemaName]
+			model[methodName + suffix] = function(){
+				return Promise.promisify(model[methodName]).apply(this, arguments)
+			}
+		})
 	})
 
 	// promisify exposed mongoose classes instance methods

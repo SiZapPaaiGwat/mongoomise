@@ -4,8 +4,6 @@
 
 promisify mongoose via Bluebird.
 
-well, you can simply switch to any other promise library
-
 ## mongoose basics
 
 understanding some mongoose basics to help you implement a better api
@@ -15,16 +13,19 @@ understanding some mongoose basics to help you implement a better api
 > * ModelName.schema equals mongoose.modelSchemas.ModelName
 > * static methods should be extended on mongoose.Model with a dynamic context
 > * instance methods should be extended on mongoose.Model.prototype
+> * custom model static methods are stored in Model.schema.statics 
 
 ## Initialization
 
 ```javascript
 var mongoose = require('mongoose')
 var mongoomise = require('mongoomise')
+//load models first
 mongoomise.promisifyAll(mongoose)
  ```
+ 
 invoke `mongoomise.promisifyAll ` just one time, on your first mongoose require.
-then you can use the utilities in everywhere.
+then you can enjoy the utilities in everywhere.
 
 ## Usage
 
@@ -44,7 +45,11 @@ User.findOneAsync().then(function(user){
 
 ## Notes
 
-* Do i need to change my schema? No.
-* Does Schema.pre and Schema.post work as usual? Yes, some discuss [here](https://github.com/yamadapc/mongoose-bluebird-utils/issues/1)
-* Any side effects? Not sure, need more test case. 
+* Do I have to change my existing code? No, just follow your old style.
+* Does Schema hooks like Schema.pre work as usual? Yes, totally the same.some useful discussion [here](https://github.com/yamadapc/mongoose-bluebird-utils/issues/1)
+* Does it support custom model statics? Yes!
 
+## To be done
+
+* add different promise providers, such as Q, when.js, RSVP and so on
+* more tests
