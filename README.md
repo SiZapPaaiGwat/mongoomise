@@ -2,7 +2,7 @@
 
 ------
 
-promisify mongoose via Bluebird.
+promisify mongoose by any promise library, current support list is bluebird, q, when, RSVP.
 
 ## mongoose basics
 
@@ -15,40 +15,47 @@ understanding some mongoose basics to help you implement a better api
 > * instance methods should be extended on mongoose.Model.prototype
 > * custom model static methods are stored in MyModel.schema.statics 
 
-## Initialization
+## Usage
 
 ```javascript
 
+var bluebird = require('bluebird')
+var Q = require('q')
+var when = require('when')
+var RSVP = require('rsvp')
 var mongoose = require('mongoose')
-var mongoomise = require('mongoomise')
-//load models first
-mongoomise.promisifyAll(mongoose)
+
+require('mongoomise').promisifyAll(mongoose, Q)
+
+var Feed = mongoose.model('Feed')
+
+// static method from Model
+Feed.countAsync().then(function(total){
+	console.log('static method from Model', total)
+})
+
+// instance method from Query
+Feed.find().countAsync().then(function(total){
+	console.log('instance method from Query', total)
+})
+
+// instance method from Model
+Feed.findOne().execAsync().then(function(feed){
+	feed.text = 'oops'
+	return feed.saveAsync()
+}).then(function(results){
+	console.log(results)
+})
+
+// custom static method
+Feed.testAsync().then(function(output){
+	console.log('custom static method', output)
+})
 
  ```
  
 invoke `mongoomise.promisifyAll ` just one time after all models are loaded,
 then you can enjoy all the utilities in everywhere.
-
-## Usage
-
-```javascript
-
-UserSchema.pre('save', function(next){
-	this.updated_time = new Date
-})
-//static method
-User.findOneAsync().then(function(user){
-	//instance method
-      user.times += 1
-	return user.saveAsync()
-}).then(function(results){
-	//user, number affected
-	console.log(results[0], results[1])
-}).error(function(err){
-	console.log(err)
-})
-
-```
 
 ## Notes
 
@@ -59,5 +66,4 @@ User.findOneAsync().then(function(user){
 
 ## To be done
 
-* support different promise providers, such as Q, when.js, RSVP and so on
 * more tests

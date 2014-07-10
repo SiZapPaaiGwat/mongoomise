@@ -1,20 +1,37 @@
 var $ = require('lodash')
-var Promise = require('bluebird')
 
 /*
- * ========
- * promisify mongoose via Bluebird
- * ========
- *
- * mongoose basics
- * models extends from mongoose.Model
- * mongoose.models.ModelName equals mongoose.model('ModelName')
- * ModelName.schema equals mongoose.modelSchemas.ModelName
- * static methods should be extended on mongoose.Model with a dynamic context
- * instance methods should be extended on mongoose.Model.prototype
+ * get a promise from different promise provider
  * */
+var getPromise = function(Promise, resolver){
+	//bluebird
+	if(Promise.promisifyAll) return new Promise(resolver)
+	// when
+	if(Promise.lift) return Promise.promise(resolver)
+	//RSVP or Q
+	if(Promise.Promise) return new Promise.Promise(resolver)
+	throw new Error('not supported promise library')
+}
 
-exports.promisifyAll = function(mongoose, suffix){
+/*
+ * get a resolver from the original node style callback function
+ * */
+var getResolver = function(method, args, context){
+	return function(resolve, reject){
+		args.push(function (err) {
+			if (err) return reject(err)
+			var receivedArgs = $.toArray(arguments)
+			// remove the first argument for error
+			receivedArgs.shift()
+			// passing the arguments
+			resolve(receivedArgs.length>1?receivedArgs:receivedArgs[0])
+		})
+		// magic invocation
+		method.apply(context, args)
+	}
+}
+
+exports.promisifyAll = function(mongoose, Promise, suffix){
 	var Schemas = mongoose.modelSchemas, Models = mongoose.models
 	if(Object.keys(Models).length < 1){
 		throw new Error('promisification should be done after all of your models are loaded')
@@ -32,10 +49,10 @@ exports.promisifyAll = function(mongoose, suffix){
 		'findOne', 'findOneAndRemove', 'findOneAndUpdate',
 		'geoNear', 'geoSearch', 'mapReduce', 'populate', 'remove', 'update'
 	]
-	$.each(modelStaticsList, function(method){
-		Model[method + suffix] = function(){
+	$.each(modelStaticsList, function(methodName){
+		Model[methodName + suffix] = function(){
 			// using this to ref the target child class, do not use Model
-			return Promise.promisify(Model[method]).apply(this, arguments)
+			return getPromise(Promise, getResolver(Model[methodName], $.toArray(arguments), this))
 		}
 	})
 
@@ -44,7 +61,7 @@ exports.promisifyAll = function(mongoose, suffix){
 		$.each(schema.statics, function(fn, methodName){
 			var model = Models[schemaName]
 			model[methodName + suffix] = function(){
-				return Promise.promisify(model[methodName]).apply(this, arguments)
+				return getPromise(Promise, getResolver(model[methodName], $.toArray(arguments), this))
 			}
 		})
 	})
@@ -62,27 +79,15 @@ exports.promisifyAll = function(mongoose, suffix){
 		]
 	}
 	$.forIn(instanceSource, function(methods, className){
-		var prototype = mongoose[className].prototype
-		$.each(methods, function(method){
-			prototype[method + suffix] = function(){
+		var cls = mongoose[className], prototype = cls.prototype
+		$.each(methods, function(i){
+			var methodName = i + suffix
+			prototype[methodName] = function(){
 				/*
 				 * mongoose internal use hooks to add pre and post handlers,
-				 * you may not use Promise.promisify directly
-				 * but the traditional way always works.
+				 * traditional way always works.
 				 * */
-				var doc = this, args = $.toArray(arguments)
-				return new Promise(function(resolve, reject){
-					args.push(function(err){
-						if(err) return reject(err)
-						var receivedArgs = $.toArray(arguments)
-						// remove the first argument for error
-						receivedArgs.shift()
-						// send the arguments as an array
-						resolve(receivedArgs)
-					})
-					// magic invocation
-					doc[method].apply(doc, args)
-				})
+				return getPromise(Promise, getResolver(this[i], $.toArray(arguments), this))
 			}
 		})
 	})
