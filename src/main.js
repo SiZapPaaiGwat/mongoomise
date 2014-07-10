@@ -62,10 +62,9 @@ exports.promisifyAll = function(mongoose, suffix){
 		]
 	}
 	$.forIn(instanceSource, function(methods, className){
-		var cls = mongoose[className], prototype = cls.prototype
-		$.each(methods, function(i){
-			var methodName = i + suffix
-			prototype[methodName] = function(){
+		var prototype = mongoose[className].prototype
+		$.each(methods, function(method){
+			prototype[method + suffix] = function(){
 				/*
 				 * mongoose internal use hooks to add pre and post handlers,
 				 * you may not use Promise.promisify directly
@@ -82,7 +81,7 @@ exports.promisifyAll = function(mongoose, suffix){
 						resolve(receivedArgs)
 					})
 					// magic invocation
-					doc[i].apply(doc, args)
+					doc[method].apply(doc, args)
 				})
 			}
 		})
