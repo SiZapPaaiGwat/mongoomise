@@ -54,7 +54,7 @@ module.exports = function(Promise){
 
 		describe('.updateAsync', function(){
 			it('should return affected number', function(done){
-				Feed.updateAsync({}, {pid:ObjectId('53bfc83857e2fcad0f97482a')}).then(function(results){
+				Feed.updateAsync({}, {pid:document._id}).then(function(results){
 					results.should.be.instanceof(Array)
 					results[0].should.be.type('number')
 					done()
