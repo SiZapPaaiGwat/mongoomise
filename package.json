@@ -1,7 +1,7 @@
 {
   "name": "mongoomise",
   "description": "promisify mongoose by any promise library",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "keywords": [
     "promise",
     "promises-aplus",
@@ -26,7 +26,8 @@
     "q": "1.0.1",
     "rsvp": "3.0.9",
     "should": "4.0.4",
-    "when": "3.3.1"
+    "when": "3.3.1",
+    "async": "0.9.0"
   },
   "dependencies": {
     "lodash": "2.4.1"

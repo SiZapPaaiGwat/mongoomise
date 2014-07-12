@@ -1,6 +1,6 @@
 # mongoomise
 
-promisify mongoose by any promise library,
+promisify mongoose by any promise library
  
 ## Support list
 
@@ -50,3 +50,32 @@ User.findOneAsync().then(function(user){
 * Does hooks like Schema.pre work as usual? Yes. some useful discussion [here](https://github.com/yamadapc/mongoose-bluebird-utils/issues/1)
 * Does it support custom model static method? Yes!
 * mongoomise.promisifyAll should be invoked `after` all models are `loaded`
+
+## Test
+
+```bash
+
+mocha ./test/mocha
+
+```
+
+## Benchmark
+
+```bash
+
+node benchmark/index
+
+```
+the benchmark contains:
+
+> * bluebird - using bluebird.promisifyAll(mongoose)
+> * mongoomise/bluebird - using mongoomise with bluebird
+> * mongoomise/Q - using mongoomise with Q
+> * mongoomise/RSVP - using mongoomise with RSVP
+> * mongoomise/when - using mongoomise with when.js
+> * mongoomise/es6Promise - using mongoomise with es6-promise
+
+in my MacAir, mongoomise/bluebird win the champion.
+
+
+

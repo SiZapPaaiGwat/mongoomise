@@ -22,7 +22,7 @@ FeedSchema.pre('save', function(next){
 })
 
 FeedSchema.post('save', function(){
-	console.log('document has been saved')
+//	console.log('document has been saved')
 })
 
 module.exports = mongoose.model('Feed', FeedSchema)
