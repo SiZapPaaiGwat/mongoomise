@@ -20,10 +20,20 @@ var mongoose = require('mongoose')
 // require your models first
 //...
 
+// choose your fav library
 require('mongoomise').promisifyAll(mongoose, require('bluebird'))
 // require('mongoomise').promisifyAll(mongoose, require('q'))
 // require('mongoomise').promisifyAll(mongoose, require('rsvp'))
 // require('mongoomise').promisifyAll(mongoose, require('when'))
+
+// start flying
+User.findOneAsync().then(function(user){
+	user.pv += 1
+	return user.saveAsync()
+}).then(function(results){
+	console.log(results)
+})
+
  ```
  
 ## Notes
