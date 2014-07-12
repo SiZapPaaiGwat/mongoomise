@@ -1,10 +1,18 @@
 # mongoomise
 
-promisify mongoose by any promise library, current support list is bluebird, q, when, RSVP.
+promisify mongoose by any promise library,
+ 
+## Support list
+
+* [bluebird](https://github.com/petkaantonov/bluebird)
+* [Q](https://github.com/kriskowal/q)
+* [when.js](https://github.com/cujojs/when)
+* [RSVP](https://github.com/tildeio/rsvp.js)
+* [es6-promise](https://github.com/jakearchibald/es6-promise)
 
 ## mongoose basics
 
-> * models extends from mongoose.Model
+> * your models extends from mongoose.Model
 > * mongoose.models.ModelName equals to mongoose.model('ModelName')
 > * ModelName.schema equals to mongoose.modelSchemas.ModelName
 > * static methods should be extended on mongoose.Model with a dynamic context
@@ -17,7 +25,7 @@ promisify mongoose by any promise library, current support list is bluebird, q, 
 
 var mongoose = require('mongoose')
 
-// require your models first
+// load your models first
 //...
 
 // choose your fav library

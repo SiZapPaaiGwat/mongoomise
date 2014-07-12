@@ -8,7 +8,7 @@ var getPromise = function(Promise, resolver){
 	if(Promise.promisifyAll) return new Promise(resolver)
 	// when
 	if(Promise.lift) return Promise.promise(resolver)
-	//RSVP or Q
+	//RSVP / Q / es6-promise
 	if(Promise.Promise) return new Promise.Promise(resolver)
 	throw new Error('not supported promise library')
 }
@@ -35,6 +35,10 @@ exports.promisifyAll = function(mongoose, Promise, suffix){
 	var Schemas = mongoose.modelSchemas, Models = mongoose.models
 	if(Object.keys(Models).length < 1){
 		throw new Error('promisification should be done after all of your models are loaded')
+	}
+
+	if(!Promise){
+		throw new Error('missing promise library')
 	}
 
 	suffix = suffix || 'Async'
