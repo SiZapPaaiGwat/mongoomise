@@ -23,6 +23,7 @@ var testFunc = function(item, callback){
 }
 
 var compareResults = function(results){
+	console.log('all tasks have been proceeded')
 	var sl = $.sortBy(results, function(i){
 		return i.elapsed
 	})
@@ -50,7 +51,7 @@ bench.add('mongoomise-bluebird', testFunc, {
 		console.log('mongoomise-bluebird is running...')
 	},
 	complete: function(elapsed){
-		console.log('mongoomise-bluebird has been proceeded ' + elapsed + ' ms.')
+		console.log('mongoomise-bluebird has been proceeded in ' + elapsed + ' ms.')
 	}
 })
 
@@ -60,7 +61,7 @@ bench.add('mongoomise-Q', testFunc, {
 		console.log('mongoomise-Q is running...')
 	},
 	complete: function(elapsed){
-		console.log('mongoomise-Q has been proceeded ' + elapsed + ' ms.')
+		console.log('mongoomise-Q has been proceeded in ' + elapsed + ' ms.')
 	}
 })
 
@@ -70,7 +71,7 @@ bench.add('mongoomise-RSVP', testFunc, {
 		console.log('mongoomise-RSVP is running...')
 	},
 	complete: function(elapsed){
-		console.log('mongoomise-RSVP has been proceeded ' + elapsed + ' ms.')
+		console.log('mongoomise-RSVP has been proceeded in' + elapsed + ' ms.')
 	}
 })
 
@@ -80,7 +81,7 @@ bench.add('mongoomise-when', testFunc, {
 		console.log('mongoomise-when is running...')
 	},
 	complete: function(elapsed){
-		console.log('mongoomise-when has been proceeded ' + elapsed + ' ms.')
+		console.log('mongoomise-when has been proceeded in' + elapsed + ' ms.')
 	}
 })
 
@@ -90,7 +91,7 @@ bench.add('mongoomise-es6Promise', testFunc, {
 		console.log('mongoomise-es6Promise is running...')
 	},
 	complete: function(elapsed){
-		console.log('mongoomise-es6Promise has been proceeded ' + elapsed + ' ms.')
+		console.log('mongoomise-es6Promise has been proceeded in' + elapsed + ' ms.')
 	}
 })
 
@@ -98,7 +99,6 @@ bench.add('mongoomise-es6Promise', testFunc, {
 var isParallel = false
 
 bench.run(function(results){
-	console.log('all task have been proceeded')
 	compareResults(results)
 	process.exit()
 }, isParallel)
