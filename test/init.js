@@ -83,13 +83,13 @@ module.exports = function(Promise){
 	describe('error', function(){
 		it('should throw an error', function(done){
 			var promise = new Feed(document).saveAsync()
-			if(promise.error){
-				return promise.error(function(err){
+			if(promise.catch){
+				return promise.catch(function(err){
 					err.should.be.instanceof(Error)
 					done()
 				})
-			}else if(promise.catch){
-				return promise.catch(function(err){
+			}else if(promise.error){
+				return promise.error(function(err){
 					err.should.be.instanceof(Error)
 					done()
 				})
