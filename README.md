@@ -33,6 +33,8 @@ require('mongoomise').promisifyAll(mongoose, require('bluebird'))
 // require('mongoomise').promisifyAll(mongoose, require('q'))
 // require('mongoomise').promisifyAll(mongoose, require('rsvp'))
 // require('mongoomise').promisifyAll(mongoose, require('when'))
+// require('mongoomise').promisifyAll(mongoose, require('es6-promise'))
+
 
 // start flying
 User.findOneAsync().then(function(user){
@@ -54,17 +56,13 @@ User.findOneAsync().then(function(user){
 ## Test
 
 ```bash
-
 mocha ./test/mocha
-
 ```
 
 ## Benchmark
 
 ```bash
-
-node benchmark/index
-
+node benchmark
 ```
 the benchmark contains:
 
@@ -75,7 +73,7 @@ the benchmark contains:
 > * mongoomise/when - using mongoomise with when.js
 > * mongoomise/es6Promise - using mongoomise with es6-promise
 
-in my MacAir, mongoomise/bluebird win the champion.
+in my MacAir, mongoomise/bluebird win the championship.
 
 
 
