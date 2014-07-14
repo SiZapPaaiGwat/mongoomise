@@ -18,6 +18,7 @@ FeedSchema.statics.custom = function(input, fn){
 
 FeedSchema.pre('save', function(next){
 	this.create_time = new Date()
+	if(this.text === '') return next(new Error('error in pre save'))
 	next()
 })
 

@@ -79,9 +79,9 @@ module.exports = function(Promise){
 		})
 	})
 
-	//handle error
+	// handle error
 	describe('error', function(){
-		it('should throw an error', function(done){
+		it('should be threw on saving', function(done){
 			var promise = new Feed(document).saveAsync()
 			if(promise.catch){
 				return promise.catch(function(err){
@@ -95,6 +95,35 @@ module.exports = function(Promise){
 				})
 			}
 		})
-	})
 
+		it('should be threw in pre save', function(done){
+			var promise = new Feed({text:''}).saveAsync()
+			if(promise.catch){
+				return promise.catch(function(err){
+					err.message.should.equal('error in pre save')
+					done()
+				})
+			}else if(promise.error){
+				return promise.error(function(err){
+					err.message.should.equal('error in pre save')
+					done()
+				})
+			}
+		})
+
+		it('should be threw in default validation', function(done){
+			var promise = new Feed({pid: 'mongo'}).saveAsync()
+			if(promise.catch){
+				return promise.catch(function(err){
+					err.constructor.name.should.equal('CastError')
+					done()
+				})
+			}else if(promise.error){
+				return promise.error(function(err){
+					err.constructor.name.should.equal('CastError')
+					done()
+				})
+			}
+		})
+	})
 }
