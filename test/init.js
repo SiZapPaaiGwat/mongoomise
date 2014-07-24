@@ -1,11 +1,11 @@
 var mongoose = require('mongoose')
 var should = require('should')
-//load model
-require('./feed')
-mongoose.connect('mongodb://localhost/mongoomise')
+var FeedSchema = require('./feed')
 var mongoomise = require('../src/main')
-var Feed = mongoose.model('Feed')
+var Feed = mongoose.model('Feed', FeedSchema)
 var ObjectId = mongoose.Types.ObjectId
+
+mongoose.connect('mongodb://localhost/mongoomise')
 
 module.exports = function(Promise){
 	mongoomise.promisifyAll(mongoose, Promise)
@@ -124,6 +124,21 @@ module.exports = function(Promise){
 					done()
 				})
 			}
+		})
+	})
+
+	describe('createConnection', function(){
+		it('should support multiple connection', function(done){
+			var conn = mongoose.createConnection('mongodb://localhost/mongoomise1')
+			var Feed2 = conn.model('Feed2', FeedSchema)
+			mongoomise.promisifyAll(conn, Promise)
+			Feed2.customAsync(1).then(function(value){
+				value.should.equal(1)
+				return mongoose.model('Feed2').countAsync()
+			}).then(function (value) {
+				value.should.equal(0)
+				done()
+			})
 		})
 	})
 }

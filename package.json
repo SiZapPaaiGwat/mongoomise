@@ -1,7 +1,7 @@
 {
   "name": "mongoomise",
   "description": "promisify mongoose by any promise library",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "keywords": [
     "promise",
     "promises-aplus",

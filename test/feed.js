@@ -22,8 +22,14 @@ FeedSchema.pre('save', function(next){
 	next()
 })
 
+FeedSchema.methods.customInstance = function(input, fn){
+	setTimeout(function(){
+		fn(null, input)
+	}, 20)
+}
+
 FeedSchema.post('save', function(){
 //	console.log('document has been saved')
 })
 
-module.exports = mongoose.model('Feed', FeedSchema)
+module.exports = FeedSchema
