@@ -3,13 +3,13 @@ var $ = require('lodash')
 /*
  * get a promise from different promise provider
  * */
-var getPromise = function(Promise, resolver){
+var getPromise = function (Promise, resolver) {
 	//bluebird
-	if(Promise.promisifyAll) return new Promise(resolver)
+	if (Promise.promisifyAll) return new Promise(resolver)
 	// when
-	if(Promise.lift) return Promise.promise(resolver)
+	if (Promise.lift) return Promise.promise(resolver)
 	//RSVP / Q / es6-promise
-	if(Promise.Promise) return new Promise.Promise(resolver)
+	if (Promise.Promise) return new Promise.Promise(resolver)
 
 	throw new Error('mongoomise promisification aborted, promise library is not supported')
 }
@@ -17,30 +17,30 @@ var getPromise = function(Promise, resolver){
 /*
  * get a resolver from the original node style callback function
  * */
-var getResolver = function(method, args, context){
-	return function(resolve, reject){
+var getResolver = function (method, args, context) {
+	return function (resolve, reject) {
 		args.push(function (err) {
 			if (err) return reject(err)
 			var receivedArgs = $.toArray(arguments)
 			// remove the first argument for error
 			receivedArgs.shift()
-			resolve(receivedArgs.length >1 ? receivedArgs : receivedArgs[0])
+			resolve(receivedArgs.length > 1 ? receivedArgs : receivedArgs[0])
 		})
 
 		method.apply(context, args)
 	}
 }
 
-exports.promisifyAll = function(mongoose, Promise, suffix){
+exports.promisifyAll = function (mongoose, Promise, suffix) {
 	suffix = suffix || 'Async'
 
-	if(!Promise){
+	if (!Promise) {
 		throw new Error('mongoomise promisification aborted, missing promise library')
 	}
 
- 	/*
- 	* connect mongodb via `mongoose.connect` or `mongoose.createConnection`
- 	* */
+	/*
+	 * connect mongodb via `mongoose.connect` or `mongoose.createConnection`
+	 * */
 	var connection = mongoose.base ? mongoose : null
 	mongoose = mongoose.base ? mongoose.base : mongoose
 
@@ -48,16 +48,16 @@ exports.promisifyAll = function(mongoose, Promise, suffix){
 	 * models may be stored on other connections
 	 * but schemas are stored on the unique mongoose instance
 	 * */
- 	var Schemas = mongoose.modelSchemas
-	if(Object.keys(Schemas).length < 1){
+	var Schemas = mongoose.modelSchemas
+	if (Object.keys(Schemas).length < 1) {
 		throw new Error('mongoomise promisification aborted, please ensure that all your schemas are loaded')
 	}
 
 	/*
-	* promisify `mongoose.Model` static methods by appending a suffix, default `Async`
-	* aggregateAsync does not work
-	* because Aggregate is not exposed by mongoose
-	* */
+	 * promisify `mongoose.Model` static methods by appending a suffix, default `Async`
+	 * aggregateAsync does not work
+	 * because Aggregate is not exposed by mongoose
+	 * */
 	var modelStaticsList = [
 		// 'aggregate',
 		'count', 'create', 'distinct', 'ensureIndexes',
@@ -66,37 +66,37 @@ exports.promisifyAll = function(mongoose, Promise, suffix){
 		'geoNear', 'geoSearch', 'mapReduce', 'populate', 'remove', 'update'
 	]
 	var mongooseModelClass = mongoose.Model
-	$.each(modelStaticsList, function(methodName){
-		mongooseModelClass[methodName + suffix] = function(){
+	$.each(modelStaticsList, function (methodName) {
+		mongooseModelClass[methodName + suffix] = function () {
 			// using this to ref the target child class, do not use Model
 			return getPromise(Promise, getResolver(mongooseModelClass[methodName], $.toArray(arguments), this))
 		}
 	})
 
 	/*
-	* promisify custom static methods from schema.statics
-	* NOTE:
-	* global models may be empty when using `connection.model`
-	* so we need `mongoose.model` to cache it and then start the promisification;
-	* `connection.model` will lookup to base when no models found
-	* */
+	 * promisify custom static methods from schema.statics
+	 * NOTE:
+	 * global models may be empty when using `connection.model`
+	 * so we need `mongoose.model` to cache it and then start the promisification;
+	 * `connection.model` will lookup to base when no models found
+	 * */
 	var globalModels = mongoose.models
 	var connectionModels = connection && connection.models
 	var unregistered = $.difference($.keys(connectionModels), $.keys(globalModels))
-	$.each(unregistered, function(i){
+	$.each(unregistered, function (i) {
 		mongoose.model(i)
 	})
-	$.each(Schemas, function(schema, schemaName){
-		$.each(schema.statics, function(fn, methodName){
+	$.each(Schemas, function (schema, schemaName) {
+		$.each(schema.statics, function (fn, methodName) {
 			var model = globalModels[schemaName]
 			var connectionModel = connectionModels && connectionModels[schemaName]
-			if(model){
-				model[methodName + suffix] = function(){
+			if (model) {
+				model[methodName + suffix] = function () {
 					return getPromise(Promise, getResolver(model[methodName], $.toArray(arguments), this))
 				}
 			}
-			if(connectionModel){
-				connectionModel[methodName + suffix] = function(){
+			if (connectionModel) {
+				connectionModel[methodName + suffix] = function () {
 					return getPromise(Promise, getResolver(connectionModel[methodName], $.toArray(arguments), this))
 				}
 			}
@@ -104,8 +104,8 @@ exports.promisifyAll = function(mongoose, Promise, suffix){
 	})
 
 	/*
-	* promisify mongoose supplied classes instance methods
-	* */
+	 * promisify mongoose supplied classes instance methods
+	 * */
 	var instanceSource = {
 		Query: [
 			'count', 'distinct', 'exec', 'find', 'findOne', 'findOneAndRemove',
@@ -117,18 +117,18 @@ exports.promisifyAll = function(mongoose, Promise, suffix){
 			'update', 'validate', 'populate'
 		]
 	}
-	$.forIn(instanceSource, function(methods, className){
+	$.forIn(instanceSource, function (methods, className) {
 		var cls = mongoose[className], prototype = cls.prototype
-		$.each(methods, function(i){
+		$.each(methods, function (i) {
 			var methodName = i + suffix
-			prototype[methodName] = function(){
+			prototype[methodName] = function () {
 				return getPromise(Promise, getResolver(this[i], $.toArray(arguments), this))
 			}
 		})
 	})
 
 	/*
-	* TODO promisify custom instance methods
-	* */
+	 * TODO promisify custom instance methods
+	 * */
 
 }
