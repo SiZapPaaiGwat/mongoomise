@@ -5,11 +5,17 @@ var $ = require('lodash')
  * */
 var getPromise = function (Promise, resolver) {
 	//bluebird
-	if (Promise.promisifyAll) return new Promise(resolver)
+	if (Promise.promisifyAll) {
+		return new Promise(resolver)
+	}
 	// when
-	if (Promise.lift) return Promise.promise(resolver)
+	if (Promise.lift) {
+		return Promise.promise(resolver)
+	}
 	//RSVP / Q / es6-promise
-	if (Promise.Promise) return new Promise.Promise(resolver)
+	if (Promise.Promise) {
+		return new Promise.Promise(resolver)
+	}
 
 	throw new Error('mongoomise promisification aborted, promise library is not supported')
 }
@@ -20,7 +26,9 @@ var getPromise = function (Promise, resolver) {
 var getResolver = function (method, args, context) {
 	return function (resolve, reject) {
 		args.push(function (err) {
-			if (err) return reject(err)
+			if (err) {
+				return reject(err)
+			}
 			var receivedArgs = $.toArray(arguments)
 			// remove the first argument for error
 			receivedArgs.shift()
