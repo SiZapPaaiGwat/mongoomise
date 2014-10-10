@@ -8,9 +8,8 @@ var mongoomise = require('../src/main')
 var bench = require('./bench')
 var $ = require('lodash')
 
-require('../test/feed')
+var Feed = mongoose.model('Feed', require('../test/feed'))
 
-var Feed = mongoose.model('Feed')
 mongoose.connect('mongodb://localhost/mongoomise')
 
 var testFunc = function(item, callback){
@@ -71,7 +70,7 @@ bench.add('mongoomise-RSVP', testFunc, {
 		console.log('mongoomise-RSVP is running...')
 	},
 	complete: function(elapsed){
-		console.log('mongoomise-RSVP has been proceeded in' + elapsed + ' ms.')
+		console.log('mongoomise-RSVP has been proceeded in ' + elapsed + ' ms.')
 	}
 })
 
@@ -81,7 +80,7 @@ bench.add('mongoomise-when', testFunc, {
 		console.log('mongoomise-when is running...')
 	},
 	complete: function(elapsed){
-		console.log('mongoomise-when has been proceeded in' + elapsed + ' ms.')
+		console.log('mongoomise-when has been proceeded in ' + elapsed + ' ms.')
 	}
 })
 
@@ -91,7 +90,7 @@ bench.add('mongoomise-es6Promise', testFunc, {
 		console.log('mongoomise-es6Promise is running...')
 	},
 	complete: function(elapsed){
-		console.log('mongoomise-es6Promise has been proceeded in' + elapsed + ' ms.')
+		console.log('mongoomise-es6Promise has been proceeded in ' + elapsed + ' ms.')
 	}
 })
 
