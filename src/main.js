@@ -63,12 +63,9 @@ exports.promisifyAll = function (mongoose, Promise, suffix) {
 
 	/*
 	 * promisify `mongoose.Model` static methods by appending a suffix, default `Async`
-	 * aggregateAsync does not work
-	 * because Aggregate is not exposed by mongoose
 	 * */
 	var modelStaticsList = [
-		// 'aggregate',
-		'count', 'create', 'distinct', 'ensureIndexes',
+		'aggregate', 'count', 'create', 'distinct', 'ensureIndexes',
 		'find', 'findById', 'findByIdAndRemove', 'findByIdAndUpdate',
 		'findOne', 'findOneAndRemove', 'findOneAndUpdate',
 		'geoNear', 'geoSearch', 'mapReduce', 'populate', 'remove', 'update'
@@ -138,5 +135,4 @@ exports.promisifyAll = function (mongoose, Promise, suffix) {
 	/*
 	 * TODO promisify custom instance methods
 	 * */
-
 }
