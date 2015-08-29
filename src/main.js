@@ -16,6 +16,10 @@ var getPromise = function (Promise, resolver) {
 	if (Promise.Promise) {
 		return new Promise.Promise(resolver)
 	}
+	// io.js promise
+	if (Promise.defer) {
+		return new Promise(resolver)
+	}
 
 	throw new Error('mongoomise promisification aborted, promise library is not supported')
 }
